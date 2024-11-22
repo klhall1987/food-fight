@@ -1,9 +1,12 @@
-[gd_scene load_steps=36 format=3 uid="uid://ck64dc18wmv1i"]
+[gd_scene load_steps=38 format=3 uid="uid://ck64dc18wmv1i"]
 
 [ext_resource type="TileSet" uid="uid://dacklybjx0vcf" path="res://Tilemap/pixle_art.tres" id="1_ugw2p"]
 [ext_resource type="Script" path="res://Scripts/player.gd" id="2_scmdw"]
 [ext_resource type="Texture2D" uid="uid://ctiisq4e3bdni" path="res://Tilemap/tilemap.png" id="3_6on1a"]
 [ext_resource type="Script" path="res://Scripts/enemy.gd" id="4_ga44q"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rm6jh"]
+font_size = 8
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c8004"]
 radius = 5.0
@@ -139,6 +142,9 @@ animations = [{
 "name": &"walk_up",
 "speed": 5.0
 }]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ibu36"]
+font_size = 8
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7vj7y"]
 atlas = ExtResource("3_6on1a")
@@ -288,8 +294,10 @@ offset_bottom = 40.0
 
 [node name="PlayerInfoPanel" type="Panel" parent="Control"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -4.0
+offset_top = 4.0
+offset_right = 36.0
+offset_bottom = 22.0
 
 [node name="HealthLabel" type="Label" parent="Control/PlayerInfoPanel"]
 layout_mode = 0
@@ -298,13 +306,19 @@ offset_bottom = 23.0
 
 [node name="NameLabel" type="Label" parent="Control/PlayerInfoPanel"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 41.0
+offset_bottom = 24.0
+text = "player"
+label_settings = SubResource("LabelSettings_rm6jh")
 
 [node name="EnemyInfoPanel" type="Panel" parent="Control"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 13.0
+offset_top = -52.0
+offset_right = 53.0
+offset_bottom = -12.0
 
 [node name="HealthLabel" type="Label" parent="Control/EnemyInfoPanel"]
 layout_mode = 0
@@ -318,8 +332,10 @@ offset_bottom = 23.0
 
 [node name="ActionButtonsPanel" type="HBoxContainer" parent="Control"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -29.0
+offset_top = -53.0
+offset_right = 11.0
+offset_bottom = -13.0
 
 [node name="AttackButton" type="Button" parent="Control/ActionButtonsPanel"]
 layout_mode = 2
@@ -339,6 +355,26 @@ shape = SubResource("CapsuleShape2D_c8004")
 position = Vector2(-53, 29)
 sprite_frames = SubResource("SpriteFrames_u3p22")
 animation = &"jump"
+
+[node name="PlayerInfoPanel" type="Panel" parent="Player"]
+offset_left = -49.0
+offset_top = -29.0
+offset_right = -9.0
+offset_bottom = -6.0
+
+[node name="HealthLabel" type="Label" parent="Player/PlayerInfoPanel"]
+layout_mode = 0
+offset_right = 52.0
+offset_bottom = 26.0
+text = "Health"
+label_settings = SubResource("LabelSettings_ibu36")
+
+[node name="NameLabel" type="Label" parent="Player/PlayerInfoPanel"]
+layout_mode = 0
+offset_left = -66.0
+offset_top = -40.0
+offset_right = -26.0
+offset_bottom = -17.0
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(-53, 31)
