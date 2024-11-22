@@ -1,11 +1,15 @@
-extends Node
+extends CharacterBody2D
 
+var speed = 100
+var points = [Vector2(100, 0), Vector2(-100, 0)]  # Movement points
+var current_point = 0
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+func _physics_process(delta):
+	var target = points[current_point]
+	velocity = (target.normalized() * speed)
+	
+	move_and_slide()
+	
+	# Change direction when reaching the point
+	if position.distance_to(target) < 10:
+		current_point = (current_point + 1) % points.size()
