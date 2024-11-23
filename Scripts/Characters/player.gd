@@ -1,38 +1,54 @@
-extends CharacterBody2D
+extends Node2D
 
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+# Player attributes
+var current_health = 100
+var attack_damage = 20
+var defense = 5
+var max_health = 100
 
-var speed = 50
-var jump_velocity = -200
-var gravity = 1000
+# Reference to TurnManager to notify when the turn ends
+var turn_manager
 
-func _physics_process(delta):
-	# Apply gravity
-	if not is_on_floor():
-		velocity.y += gravity * delta
+# Called when the scene is ready
+func _ready():
+	# Find and assign the TurnManager node (adjust path as necessary)
+	turn_manager = get_node("/root/Scene/Level/TurnManager")
 
-	# Movement input
-	var direction = Vector2.ZERO
-	if Input.is_action_pressed("move_left"):
-		direction.x = -1
-	elif Input.is_action_pressed("move_right"):
-		direction.x = 1
+# Handle player input
+func _process(_delta):
+	if turn_manager.current_turn == turn_manager.TurnState.PLAYER_TURN:  # Use TurnManager's TurnState
+		if Input.is_action_just_pressed("attack"):  # Check if the 'attack' button is pressed
+			attack(turn_manager.enemy)  # Attack the enemy
+		elif Input.is_action_just_pressed("heal"):  # Example: If the player has heal mapped
+			heal(20)  # Heal the player
+		elif Input.is_action_just_pressed("special"):  # Special skill mapped
+			special_skill(turn_manager.enemy)
 
-	velocity.x = direction.x * speed
+# Player takes damage from the enemy
+func take_damage(amount):
+	var damage_taken = max(amount - defense, 0)  # Calculate effective damage considering defense
+	current_health -= damage_taken
+	if current_health < 0:
+		current_health = 0
+	print("Player takes ", damage_taken, " damage. Health: ", current_health)
 
-	# Jump input
-	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = jump_velocity
-		sprite.play("jump")  # Show jump frame
+# Player attacks the enemy
+func attack(enemy):
+	print("Player attacks!")
+	enemy.take_damage(attack_damage)
+	turn_manager.end_turn()  # End the player's turn
 
-	# Handle animations
-	if is_on_floor():
-		if direction.x < 0:  # Moving left
-			sprite.play("walk_left")
-		elif direction.x > 0:  # Moving right
-			sprite.play("walk_right")
-		else:  # Not moving horizontally
-			sprite.play("idle")
+# Example of a player heal action (optional)
+func heal(amount):
+	current_health += amount
+	if current_health > max_health:
+		current_health = max_health
+	print("Player heals ", amount, " Health: ", current_health)
+	turn_manager.end_turn()  # End the player's turn
 
-	# Apply movement
-	move_and_slide()
+# Example of a special skill (optional)
+func special_skill(enemy):
+	print("Player uses special skill!")
+	var special_damage = attack_damage * 1.5  # Deal more damage for example
+	enemy.take_damage(special_damage)
+	turn_manager.end_turn()  # End the player's turn

@@ -1,15 +1,10 @@
-[gd_scene load_steps=39 format=3 uid="uid://ck64dc18wmv1i"]
+[gd_scene load_steps=37 format=3 uid="uid://ck64dc18wmv1i"]
 
 [ext_resource type="TileSet" uid="uid://dacklybjx0vcf" path="res://Tilemap/pixle_art.tres" id="1_ugw2p"]
-[ext_resource type="FontFile" uid="uid://ccbbilkp5lhuq" path="res://Fonts/Avenir Next.ttc" id="2_td43p"]
 [ext_resource type="Texture2D" uid="uid://ctiisq4e3bdni" path="res://Tilemap/tilemap.png" id="3_6on1a"]
 [ext_resource type="Script" path="res://Scripts/Characters/player.gd" id="3_rai3a"]
 [ext_resource type="Script" path="res://Scripts/Characters/enemy.gd" id="5_fbutc"]
 [ext_resource type="Script" path="res://Scripts/GameSystems/turn_manager.gd" id="6_hmq3b"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_rm6jh"]
-font = ExtResource("2_td43p")
-font_size = 8
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c8004"]
 radius = 5.0
@@ -286,67 +281,11 @@ tile_set = ExtResource("1_ugw2p")
 format = 2
 layer_0/tile_data = PackedInt32Array(-65538, 65537, 4, -65537, 65537, 4, -131072, 65537, 4, -131071, 65537, 4, -131070, 65537, 4, -65534, 65537, 4, 2, 65537, 4, 65538, 65537, 4, 131074, 65537, 4, 131073, 65537, 4, 131072, 65537, 4, 196607, 65537, 4, 196606, 65537, 4, 131070, 65537, 4, 65534, 65537, 4, -2, 65537, 4, -1, 65537, 4, 65535, 65537, 4, 131071, 65537, 4, 65536, 65537, 4, 65537, 65537, 4, 1, 65537, 4, -65535, 65537, 4, -65536, 65537, 4, 0, 65537, 4, -131075, 65537, 4, 196605, 65537, 4, 196604, 65537, 4, 131068, 65537, 4, 131069, 65537, 4, 65533, 65537, 4, -3, 65537, 4, -4, 65537, 4, 65532, 65537, 4, -65540, 65537, 4, -65539, 65537, 4, -131076, 65537, 4, -131074, 65537, 4, -131073, 65537, 4, -196608, 65537, 4, -196607, 65537, 4, -196606, 65537, 4, -196613, 1, 3, 262139, 1, 5, -262142, 65537, 3, -262143, 65537, 3, -262144, 65537, 3, -196609, 65537, 3, -196610, 65537, 3, -196611, 65537, 3, -196612, 65537, 3, -131077, 1, 4, -65541, 1, 4, -5, 1, 4, 65531, 1, 4, 131067, 1, 4, 196603, 1, 4, 262140, 65537, 5, 262141, 65537, 5, 262142, 65537, 5, 262143, 65537, 5, 196608, 65537, 5, 196609, 65537, 5, 196610, 65537, 5, -262141, 131073, 3, -196605, 131073, 4, -131069, 131073, 4, -65533, 131073, 4, 3, 131073, 4, 65539, 131073, 4, 131075, 131073, 4, 196611, 131073, 5)
 
-[node name="Control" type="Control" parent="Level"]
+[node name="UI" type="Control" parent="Level"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-
-[node name="PlayerInfoPanel" type="Panel" parent="Level/Control"]
-visible = false
-layout_mode = 0
-offset_left = -66.0
-offset_top = 25.0
-offset_right = -26.0
-offset_bottom = 43.0
-
-[node name="HealthLabel" type="Label" parent="Level/Control/PlayerInfoPanel"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="NameLabel" type="Label" parent="Level/Control/PlayerInfoPanel"]
-layout_mode = 0
-offset_left = 1.0
-offset_top = 1.0
-offset_right = 41.0
-offset_bottom = 24.0
-text = "player"
-label_settings = SubResource("LabelSettings_rm6jh")
-
-[node name="EnemyInfoPanel" type="Panel" parent="Level/Control"]
-visible = false
-layout_mode = 0
-offset_left = 13.0
-offset_top = -52.0
-offset_right = 53.0
-offset_bottom = -12.0
-
-[node name="HealthLabel" type="Label" parent="Level/Control/EnemyInfoPanel"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="NameLabel" type="Label" parent="Level/Control/EnemyInfoPanel"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 0
-text = "Enemy"
-
-[node name="ActionButtonsPanel" type="HBoxContainer" parent="Level/Control"]
-visible = false
-layout_mode = 0
-offset_left = -29.0
-offset_top = -53.0
-offset_right = 11.0
-offset_bottom = -13.0
-
-[node name="AttackButton" type="Button" parent="Level/Control/ActionButtonsPanel"]
-layout_mode = 2
-
-[node name="DefendButton" type="Button" parent="Level/Control/ActionButtonsPanel"]
-layout_mode = 2
 
 [node name="Characters" type="Node2D" parent="Level"]
 
