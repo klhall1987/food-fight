@@ -8,11 +8,20 @@ var max_health = 100
 
 # Reference to TurnManager to notify when the turn ends
 var turn_manager
+var animation_sprite  # Reference to the AnimatedSprite2D
+var current_animation = ""  # Track the name of the currently playing animation
 
 # Called when the scene is ready
 func _ready():
 	# Find and assign the TurnManager node (adjust path as necessary)
 	turn_manager = get_node("/root/Scene/Level/TurnManager")
+	animation_sprite = $AnimatedSprite2D
+	if animation_sprite:
+		animation_sprite.connect("animation_finished", Callable(self, "on_animation_finished"))
+		print("Signal connected in _on_tree_entered")
+	else:
+		print("Error: AnimatedSprite2D not found in _on_tree_entered")
+
 
 # Handle player input
 func _process(_delta):
@@ -34,9 +43,10 @@ func take_damage(amount):
 
 # Player attacks the enemy
 func attack(enemy):
-	print("Player attacks!")
+	print(animation_sprite)
+	current_animation = "attack"  # Set the current animation name
+	animation_sprite.play(current_animation)  # Play attack animation
 	enemy.take_damage(attack_damage)
-	turn_manager.end_turn()  # End the player's turn
 
 # Example of a player heal action (optional)
 func heal(amount):
@@ -52,3 +62,14 @@ func special_skill(enemy):
 	var special_damage = attack_damage * 1.5  # Deal more damage for example
 	enemy.take_damage(special_damage)
 	turn_manager.end_turn()  # End the player's turn
+
+# Callback method for when an animation finishes
+# Callback for when any animation finishes
+func on_animation_finished():
+	if current_animation == "attack":
+		print("Attack animation finished!")
+		animation_sprite.play("idle")  # Return to idle animation
+		current_animation = ""  # Reset the current animation
+		turn_manager.end_turn()  # End the player's turn
+	else:
+		print("Other animation finished:", current_animation)  # Play idle animation after the attack finishes
