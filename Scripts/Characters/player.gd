@@ -1,5 +1,8 @@
 extends Node2D
 
+# Define a custom signal
+signal attack_finished(damage, target)
+
 # Player attributes
 var current_health = 100
 var attack_damage = 20
@@ -11,6 +14,14 @@ var turn_manager
 var animation_sprite  # Reference to the AnimatedSprite2D
 var current_animation = ""  # Track the name of the currently playing animation
 
+# Sliding variables
+var is_sliding = false
+var slide_distance = 5.0  # Total distance to slide in pixels
+var slide_speed = 20.0    # Speed of sliding in pixels per second
+var slide_progress = 0.0  # Track how far the character has slid
+var slide_direction = Vector2(1, 0)  # Slide direction (default: right)
+var sliding_forward = true  # Indicates whether the character is sliding forward or back
+
 # Called when the scene is ready
 func _ready():
 	# Find and assign the TurnManager node (adjust path as necessary)
@@ -18,58 +29,75 @@ func _ready():
 	animation_sprite = $AnimatedSprite2D
 	if animation_sprite:
 		animation_sprite.connect("animation_finished", Callable(self, "on_animation_finished"))
-		print("Signal connected in _on_tree_entered")
 	else:
-		print("Error: AnimatedSprite2D not found in _on_tree_entered")
-
+		print("Error: AnimatedSprite2D not found in _ready")
 
 # Handle player input
-func _process(_delta):
-	if turn_manager.current_turn == turn_manager.TurnState.PLAYER_TURN:  # Use TurnManager's TurnState
-		if Input.is_action_just_pressed("attack"):  # Check if the 'attack' button is pressed
-			attack(turn_manager.enemy)  # Attack the enemy
-		elif Input.is_action_just_pressed("heal"):  # Example: If the player has heal mapped
-			heal(20)  # Heal the player
-		elif Input.is_action_just_pressed("special"):  # Special skill mapped
+func _process(delta):
+	if turn_manager.current_turn == turn_manager.TurnState.PLAYER_TURN and not is_sliding:
+		if Input.is_action_just_pressed("attack"):
+			attack()
+		elif Input.is_action_just_pressed("heal"):
+			heal(20)
+		elif Input.is_action_just_pressed("special"):
 			special_skill(turn_manager.enemy)
 
-# Player takes damage from the enemy
+	# Handle sliding motion
+	if is_sliding:
+		var move = slide_direction * slide_speed * delta  # Calculate this frame's movement
+		position += move  # Apply movement to the character
+		slide_progress += move.length()  # Track distance slid
+
+		# Handle forward and backward sliding
+		if sliding_forward and slide_progress >= slide_distance:
+			# Reverse direction for backward slide
+			slide_direction = -slide_direction
+			slide_progress = 0.0  # Reset progress for backward slide
+			sliding_forward = false
+		elif not sliding_forward and slide_progress >= slide_distance:
+			# End sliding after backward slide
+			is_sliding = false
+			slide_progress = 0.0
+			sliding_forward = true  # Reset for next attack
+
+# Player takes damage
 func take_damage(amount):
-	var damage_taken = max(amount - defense, 0)  # Calculate effective damage considering defense
+	var damage_taken = max(amount - defense, 0)
 	current_health -= damage_taken
-	if current_health < 0:
-		current_health = 0
+	current_health = max(current_health, 0)
 	print("Player takes ", damage_taken, " damage. Health: ", current_health)
 
 # Player attacks the enemy
-func attack(enemy):
-	print(animation_sprite)
-	current_animation = "attack"  # Set the current animation name
-	animation_sprite.play(current_animation)  # Play attack animation
-	enemy.take_damage(attack_damage)
+func attack():
+	if not is_sliding:  # Prevent sliding during another slide
+		current_animation = "attack"
+		animation_sprite.play(current_animation)  # Play attack animation
 
-# Example of a player heal action (optional)
+		# Start sliding motion
+		is_sliding = true
+		slide_progress = 0.0
+		slide_direction = Vector2(1, 0)  # Adjust as needed (e.g., Vector2(-1, 0) for left)
+		sliding_forward = true  # Start with forward slide
+
+# Example: Player heals
 func heal(amount):
 	current_health += amount
-	if current_health > max_health:
-		current_health = max_health
+	current_health = min(current_health, max_health)
 	print("Player heals ", amount, " Health: ", current_health)
-	turn_manager.end_turn()  # End the player's turn
+	turn_manager.end_turn()
 
-# Example of a special skill (optional)
+# Example: Special skill
 func special_skill(enemy):
 	print("Player uses special skill!")
-	var special_damage = attack_damage * 1.5  # Deal more damage for example
+	var special_damage = attack_damage * 1.5
 	enemy.take_damage(special_damage)
-	turn_manager.end_turn()  # End the player's turn
+	turn_manager.end_turn()
 
-# Callback method for when an animation finishes
-# Callback for when any animation finishes
+# Callback for when an animation finishes
 func on_animation_finished():
 	if current_animation == "attack":
 		print("Attack animation finished!")
-		animation_sprite.play("idle")  # Return to idle animation
-		current_animation = ""  # Reset the current animation
-		turn_manager.end_turn()  # End the player's turn
-	else:
-		print("Other animation finished:", current_animation)  # Play idle animation after the attack finishes
+		emit_signal("attack_finished", attack_damage, turn_manager.enemy)  # Emit signal
+		animation_sprite.play("idle")
+		current_animation = ""  # Reset animation
+		turn_manager.end_turn()
